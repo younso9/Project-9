@@ -3,23 +3,25 @@
 // load modules
 const express = require('express');
 const morgan = require('morgan');
-const Sequelize = require('sequelize');
-const courseRoute = require("./routes/courseRoute");
-const usersRoute = require("./routes/usersRoute");
-
+/* const Sequelize = require('sequelize');
+const courseRoute = require('./routes/courseRoute.js');
+const usersRoute = require('./routes/usersRoute.js'); */
+const { sequelize } = require('./models')
 
 // variable to enable global error logging
 const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'true';
 
-// create the Express app
-const app = express();
-
-app.use('/api', usersRoute);
-app.use('/api', courseRoute);
-
 
 // setup morgan which gives us http request logging
 app.use(morgan('dev'));
+
+
+// create the Express app
+const app = express();
+
+/* app.use('/api', usersRoute);
+app.use('/api', courseRoute); */
+
 
 // TODO setup your api routes here
 

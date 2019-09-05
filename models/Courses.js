@@ -1,16 +1,5 @@
 'use strict';
 
-// module.exports = (sequelize, type) => {
-//     return sequelize.define('user', {
-//         id: {
-//             type: type.INTEGER,
-//             primaryKey: true,
-//             autoIncrement: true
-//         },
-//         name: type.STRING
-//     })
-// }
-
 module.exports = (sequelize, DataTypes) => {
     const Course = sequelize.define('Course', {
         id: {
@@ -21,35 +10,36 @@ module.exports = (sequelize, DataTypes) => {
         userId: {
             type: DataTypes.INTEGER,
             primaryKey: true,
-            autoIncrement: true
+           
         },
+
         title: {
             type: DataTypes.STRING,
-            primaryKey: true,
-            autoIncrement: true
-        },
-        description: {
-            type: DataTypes.STRING,
-            primaryKey: true,
-            autoIncrement: true
-        },
-        estimatedTime: {
-            type: DataTypes.STRING,
-            //notEmpty is validate, custom error message shown on the respective form
+            allowNull: false,
             validate: {
-                notEmpty: {
-                    msg: "Author cannot be empty."
-                }
+                notEmpty: { msg: 'Course title is needed' },
             },
         },
+        description: {
+            type: DataTypes.TEXT,
+            allowNull: false,
+            validate: {
+                notEmpty: { msg: 'Course title is needed' },
+            },
+        },
+
+        estimatedTime: {
+            type: DataTypes.STRING,
+            allowNull: true,
+        },
+
         materialsNeeded: {
             type: DataTypes.STRING,
-            primaryKey: true,
-            autoIncrement: true
-        },
-        genre: DataTypes.STRING,
-        year: DataTypes.INTEGER
-    }, {sequelize});
+            allowNull: true,
+        }
+    });
+     
+
     Course.associate = (models) => {
         Course.belongsTo(models.User, { 
             foreignKey: {
