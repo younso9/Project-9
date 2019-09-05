@@ -7,7 +7,7 @@ const userData = data.users;
 
 
 // GET/api/users
-router.get('/users', (req, res) => {
+router.get('/routes/usersRoute', (req, res) => {
     res.json(userData);
 });
 
@@ -16,7 +16,7 @@ router.get('/users', (req, res) => {
 //POST/api/users 
 
 
-router.post('/users');
+router.post('/routes/usersRoute');
 
 
 module.exports = router;
