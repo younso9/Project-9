@@ -1,56 +1,43 @@
 'use strict';
 
-// load modules
+// This loads modules
 const express = require('express');
 const morgan = require('morgan');
-/* const Sequelize = require('sequelize');
-const courseRoute = require('./routes/courseRoute.js');
-const usersRoute = require('./routes/usersRoute.js'); */
-const { sequelize } = require('./models')
+const { sequelize } = require('./models');
+const users = require('./routes/users');
+const courses = require('./routes/courses');
 
-// variable to enable global error logging
+// This is the Database connection  > Sequelize: validates/assiociates/syncronizes the database
+sequelize.authenticate()
+  .then(() => {
+    console.log('connection successful')
+  }).catch((e) => {
+    console.log('connection failed. error: ' + e)
+  })
+
+// This nable global error logging >  allows access to database when path is set
+// 
 const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'true';
-
-
-// setup morgan which gives us http request logging
-app.use(morgan('dev'));
-
 
 // create the Express app
 const app = express();
 
-/* app.use('/api', usersRoute);
-app.use('/api', courseRoute); */
+//--request body parser
+app.use(express.json());
 
+// setup morgan which gives us http request logging
+app.use(morgan('dev'));
 
-// TODO setup your api routes here
+// api routes
+app.use('/api/users', users)
+app.use('/api/courses', courses)
 
-//USERS
-  // 1 setup a friendly greeting for the root route
+// setup a friendly greeting for the root route
 app.get('/', (req, res) => {
   res.json({
     message: 'Welcome to the REST API project!',
   });
 });
-
-
-// const usersRoute = require('./routes/users');
-
-
-
-
-
-// // Redirect to api route
-
-
-// app.get("/", function (req, res, next) {
-
-
-//   res.redirect("/api");
-
-
-// });
-
 
 // send 404 if no other route matched
 app.use((req, res) => {
@@ -78,5 +65,3 @@ app.set('port', process.env.PORT || 5000);
 const server = app.listen(app.get('port'), () => {
   console.log(`Express server is listening on port ${server.address().port}`);
 });
-
-// https://teamtreehouse.com/library/create-an-express-app
