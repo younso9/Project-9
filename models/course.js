@@ -17,7 +17,6 @@ module.exports = (sequelize, DataTypes) => {
                     msg: "Sorry ~ Title is required"
                 }
             },
-            
         },
         description: {
             type: DataTypes.TEXT,
@@ -30,7 +29,6 @@ module.exports = (sequelize, DataTypes) => {
                     msg: "Sorry ~ Description is required"
                 }
             },
-            
         },
         estimatedTime: {
             type: DataTypes.STRING,
@@ -40,7 +38,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             allowNull: true
         }
-    }, {});
+    });
     Course.associate = function (models) {
         // associations can be defined here
         Course.belongsTo(models.User, {

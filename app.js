@@ -1,36 +1,19 @@
 'use strict';
 
-// This loads modules
+// load modules
 const express = require('express');
 const morgan = require('morgan');
-const { sequelize } = require('./models');
-const users = require('./routes/users');
-const courses = require('./routes/courses');
 
-// This is the Database connection  > Sequelize: validates/assiociates/syncronizes the database
-sequelize.authenticate()
-  .then(() => {
-    console.log('connection successful')
-  }).catch((e) => {
-    console.log('connection failed. error: ' + e)
-  })
-
-// This nable global error logging >  allows access to database when path is set
-// 
+// variable to enable global error logging
 const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'true';
 
 // create the Express app
 const app = express();
 
-//--request body parser
-app.use(express.json());
-
 // setup morgan which gives us http request logging
 app.use(morgan('dev'));
 
-// api routes
-app.use('/api/users', users)
-app.use('/api/courses', courses)
+// TODO setup your api routes here
 
 // setup a friendly greeting for the root route
 app.get('/', (req, res) => {
