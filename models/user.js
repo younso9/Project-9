@@ -12,10 +12,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         validate: {
           notEmpty: {
-            msg: "firstName is required"
+            msg: "Sorry - FirstName is required"
           },
           notNull: {
-            msg: "firstName is required"
+            msg: "Sorry - FirstName is required"
           }
         },
         allowNull: false
@@ -24,10 +24,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         validate: {
           notEmpty: {
-            msg: "lastName is required"
+            msg: "Sorry - LastName is required"
           },
           notNull: {
-            msg: "lastName is required"
+            msg: "Sorry - LastName is required"
           }
         },
         allowNull: false
@@ -36,13 +36,13 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         validate: {
           notEmpty: {
-            msg: "emailAddress is required"
+            msg: "Sorry - an emailAddress is required"
           },
           notNull: {
-            msg: "emailAddress is required"
+            msg: "Sorry - an emailAddress is required"
           },
           isEmail: {
-            msg: "not valid email"
+            msg: "Sorry - That is not valid email"
           }
         },
         allowNull: false
@@ -51,10 +51,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         validate: {
           notEmpty: {
-            msg: "password is required"
+            msg: "So Sorry - password is required"
           },
           notNull: {
-            msg: "password is required"
+            msg: "So Sorry - password is required"
           }
         },
         allowNull: false
@@ -62,9 +62,8 @@ module.exports = (sequelize, DataTypes) => {
     },
     {}
     );
-    //Forming the association between the 2 tables (Users and Courses)
+    // This is forming an association between the 2 tables (Users and Courses)
     User.associate = function(models) {
-        // associations can be defined here
         User.hasMany(models.Course);
     };
   return User;
