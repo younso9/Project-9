@@ -326,6 +326,44 @@ app.put('/api/courses/:id', authenticateUser, (req, res, next) => {
     }
 });
 
+//COURSE ROUTES
+//Send a DELETE request to /api/courses/:id to delete courses
+//Authentication  
+app.delete('/api/courses/:id', authenticateUser, (req, res, next) => {
+    //delete the course at ID :id - check if it exists first
+    const Course = app.get('models').Course;
+
+
+    Course.findByPk(req.params.id).then((foundCourse) => {
+        if (foundCourse) {
+
+            if (foundCourse.userId === req.currentUser.id) {
+                Course.destroy({
+                    where: { id: req.params.id }
+                }).then(() => {
+                    res.status(204);
+                    res.send();
+                })
+                    .catch((err) => {
+                        next(new Error(err));
+                    });
+            }
+            else {
+                res.status(403);
+                res.json({ "message": "Course does not belong to currently authenticated user." })
+            }
+        }
+        else {
+            res.status(404);
+            res.json({ "message": "Course not found for ID " + req.params.id });
+        }
+    })
+        .catch((err) => {
+            next(new Error(err));
+        });
+
+});
+
 // setup a friendly greeting for the root route
 app.get('/', (req, res) => {
     res.json({
