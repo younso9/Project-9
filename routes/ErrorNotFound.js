@@ -274,10 +274,10 @@ app.put('/api/courses/:id', authenticateUser, (req, res, next) => {
     const errors = [];
 
     if (!course.title) {
-        errors.push('Please provide a value for "title"');
+        errors.push('Please provide a "title" for your selection');
     }
     if (!course.description) {
-        errors.push('Please provide a value for "description"');
+        errors.push('Please provide a "title" for your selection');
     }
 
     if (errors.length != 0) {

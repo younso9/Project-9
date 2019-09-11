@@ -1,70 +1,67 @@
-"use strict";
+'use strict';
+
 module.exports = (sequelize, DataTypes) => {
-  const User = sequelize.define(
-    "User",
-    {
-      id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
+  const User = sequelize.define('User', {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    firstName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: {
+          msg: 'Your first name is required'
+        }
       },
-      firstName: {
-        type: DataTypes.STRING,
-        validate: {
-          notEmpty: {
-            msg: "Sorry - FirstName is required"
-          },
-          notNull: {
-            msg: "Sorry - FirstName is required"
-          }
-        },
-        allowNull: false
+    },
+    lastName: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: {
+          msg: 'Your Last Name is required'
+        }
       },
-      lastName: {
-        type: DataTypes.STRING,
-        validate: {
-          notEmpty: {
-            msg: "Sorry - LastName is required"
-          },
-          notNull: {
-            msg: "Sorry - LastName is required"
-          }
+    },
+    emailAddress: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        isEmail: {
+          msg: 'Please enter a valid email address'
         },
-        allowNull: false
+        notEmpty: {
+          msg: 'Sorry ~ A valid email address is required'
+        }
       },
-      emailAddress: {
-        type: DataTypes.STRING,
-        validate: {
-          notEmpty: {
-            msg: "Sorry - an emailAddress is required"
-          },
-          notNull: {
-            msg: "Sorry - an emailAddress is required"
-          },
-          isEmail: {
-            msg: "Sorry - That is not valid email"
-          }
-        },
-        allowNull: false
-      },
-      password: {
-        type: DataTypes.STRING,
-        validate: {
-          notEmpty: {
-            msg: "So Sorry - password is required"
-          },
-          notNull: {
-            msg: "So Sorry - password is required"
-          }
-        },
-        allowNull: false
+      unique: {
+        args: true,
+        msg: "Sorry ~ This email address already exists."
       }
     },
-    {}
-    );
-    // This is forming an association between the 2 tables (Users and Courses)
-    User.associate = function(models) {
-        User.hasMany(models.Course);
-    };
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      validate: {
+        notEmpty: {
+          msg: 'Your Password is required'
+        }
+      },
+    }
+  });
+
+  // This relation sets up a many-to-many connection with the user model
+  User.associate = (models) => {
+    User.hasMany(models.Course, {   
+      as: 'user',
+      foreignKey: {
+        fieldName: 'userId',
+        allowNull: false,
+      },
+    });
+  };
+
   return User;
 };
