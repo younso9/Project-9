@@ -1,10 +1,10 @@
-// create the Express app
+// This creates the Express app
 const express = require('express');
 const app = express();
 
 const Sequelize = require('sequelize');
 
-//Body-parser:  informs the application what format http request bodys will contain, in our case everything is JSON
+// Body-parser:  informs the application what format http request bodys will contain, in our case everything is JSON
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
@@ -102,10 +102,10 @@ app.get('/api/users', authenticateUser, (req, res, next) => {
       const errors = [];
   
       if (!user.emailAddress) {
-        errors.push('Please provide a value for "emailAddress"');
+        errors.push('Please provide a valid "emailAddress"');
       }
       if (!user.password) {
-        errors.push('Please provide a value for "password"');
+        errors.push('Please provide a valid "password"');
       }
       
       if (errors.length != 0)
