@@ -10,8 +10,6 @@ const { User, Course } = require('./models');
 const bcryptjs = require('bcryptjs');
 const auth = require('basic-auth');
 
-
-
 // This variable will enable global error logging
 const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'true';
 
@@ -202,7 +200,7 @@ app.delete('/api/courses/:id', authenticateUser, asyncHandler(async (req, res, n
         res.status(204).end();
     } else {
         //users may not delete courses that they do not own
-        const err = new Error('Forbidden');
+        const err = new Error('This Action is Not Allowed');
         err.status = 403;
         next(err);
     }
@@ -250,12 +248,12 @@ app.use((err, req, res, next) => {
 app.set('port', process.env.PORT || 5000);
 
 // This will test the connection to the database
-console.log('Testing my connection to the db');
+console.log('Testing connection to the db');
 sequelize
     .authenticate() // Attempt to authenticate database
     .then(() => {
         // If database is authenticated, then sync the database
-        console.log('Connection successful - synchronizing models to database');
+        console.log('Connection Successful - Syncing in progress');
         return sequelize.sync();
     })
     .then(() => {
@@ -265,7 +263,7 @@ sequelize
             console.log(`Express server is listening on port ${server.address().port}`);
         });
     }) // This will inform the user if database authentication fails
-    .catch(err => console.log('Sorry Connection Failed'));
+    .catch(err => console.log('Sorry ~ Connection Failed'));
 
 
 

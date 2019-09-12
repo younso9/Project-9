@@ -4,11 +4,13 @@ const app = express();
 
 const Sequelize = require('sequelize');
 
-//Body-parser:  informs the application what format http request bodys will contain, in our case everything is JSON
+// Body-parser analyzes the JSON, buffer, string and URL encoded
+// data submitted using HTTP request.
+
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 
-//Sequelize DB object typical way to get Sequelize DB object
+// Sequelize DB object typical way to get Sequelize DB object
 app.set('models', require('../models'));
 
 //USER ROUTES
