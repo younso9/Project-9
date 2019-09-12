@@ -19,13 +19,10 @@ const app = express();
 // which simplifies the process of logging requests to your application.
 app.use(morgan('dev'));
 
+// This enables access to req.body
 // Body-parser analyzes the JSON, buffer, string and URL encoded data submitted using HTTP request.
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
-
-// // This enables access to req.body
-// app.use(express.json());
-// app.use(express.urlencoded({ extended: true }));
 
 // This is the async/await handler
 const asyncHandler = cb => {
