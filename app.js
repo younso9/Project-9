@@ -228,29 +228,6 @@ app.use((req, res) => {
     });
 });
 
-// // This is the Global Error handler
-// app.use((err, req, res, next) => {
-//     if (enableGlobalErrorLogging) {
-//         console.error(`Global error handler: ${JSON.stringify(err.stack)}`);
-//     }
-//     if (err.name === 'SequelizeValidationError') {
-//         let errorString = '';
-//         for (let error in err.errors) {
-//             errorString += `${err.errors[error].message}\n`;
-//         }
-//         err.status = 400;
-//     }
-//     if (err.name === 'SequelizeUniqueConstraintError') {
-//         err.status = 400;
-//     }
-//     console.log(err);
-//     res.status(err.status || 500).json({
-//         message: err.message,
-//         error: {},
-//     });
-// });
-
-
 // This sets port value
 app.set('port', process.env.PORT || 5000);
 
@@ -294,4 +271,28 @@ sequelize
 // // This will start listening to the port
 // const server = app.listen(app.get('port'), () => {
 //     console.log(`Express server is listening on port ${server.address().port}`);
+// });
+
+
+
+// // This is the Global Error handler
+// app.use((err, req, res, next) => {
+//     if (enableGlobalErrorLogging) {
+//         console.error(`Global error handler: ${JSON.stringify(err.stack)}`);
+//     }
+//     if (err.name === 'SequelizeValidationError') {
+//         let errorString = '';
+//         for (let error in err.errors) {
+//             errorString += `${err.errors[error].message}\n`;
+//         }
+//         err.status = 400;
+//     }
+//     if (err.name === 'SequelizeUniqueConstraintError') {
+//         err.status = 400;
+//     }
+//     console.log(err);
+//     res.status(err.status || 500).json({
+//         message: err.message,
+//         error: {},
+//     });
 // });

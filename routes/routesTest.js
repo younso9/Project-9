@@ -15,7 +15,7 @@ const authenticateUser = require("./auth");
 app.set("models", require("../models"));
 
 // RESOURCE: https://teamtreehouse.com/library/rest-api-authentication-with-express
-//AUTHENTICATION MIDDLEWARE
+// MIDDLEWARE AUTHENTICATION
 const authenticateUser = (req, res, next) => {
   let message = null;
 
@@ -67,22 +67,19 @@ const authenticateUser = (req, res, next) => {
   }
 };
 
-//USER ROUTES
-//AUTHENTICATION
-//Send a GET request to /api/users to show users
-//Returns HTTP: Status Code 200 means OK
+// This will send a GET request to /api/users to show users
+// This returns HTTP: Status Code 200 means OK
 app.get("/api/users", authenticateUser, (req, res, next) => {
   res.status(200);
   res.json(req.currentUser);
 });
 
-//USER ROUTES
 // This will send a POST request to /api/users to create a user
 // It returns HTTP: Status Code 201 - means created successfully
 app.post("/api/users", (req, res, next) => {
   const user = req.body;
 
-  //Use input validators for emailAddress and password, then use Sequelize validation for the entire model User
+  // This validates emailAddress and password, then use Sequelize validation for User
 
   const errors = [];
 
@@ -111,7 +108,6 @@ app.post("/api/users", (req, res, next) => {
             res.send();
           })
           .catch(err => {
-            //https://stackoverflow.com/questions/16507222/create-json-object-dynamically-via-javascript-without-concate-strings
             // IF a validation error of 400 returns - means Bad Request
             if (err.name === "SequelizeValidationError") {
               res.status(400);
@@ -134,7 +130,7 @@ app.post("/api/users", (req, res, next) => {
     });
   }
 });
-//COURSE ROUTES - Resource: https://stackoverflow.com/questions/21883484/how-to-use-an-include-with-attributes-with-sequelize
+
 // This will send a GET request to /api/courses to list courses
 // It will returns a 200 HTTP: Status Code - request successfull
 
@@ -151,9 +147,8 @@ app.get("/api/courses", (req, res, next) => {
   });
 });
 
-//COURSE ROUTES
 // This will send a GET request to /api/courses/:id to show course
-// This will returns HTTP: Status Code 200 - successful
+// This will returns HTTP: Status Code 200 - (Request successful)
 app.get("/api/courses/:id", (req, res, next) => {
   const Course = app.get("models").Course;
   const User = app.get("models").User;
@@ -166,7 +161,7 @@ app.get("/api/courses/:id", (req, res, next) => {
         res.status(200);
         res.json(foundCourse);
       } else {
-        //Render 404 if :id is not found in the db
+        // This will render a status code of 404 (Not Found) if :id is not found in the db
         res.status(404);
         res.json({ message: "Course not found for ID " + req.params.id });
       }
@@ -176,7 +171,6 @@ app.get("/api/courses/:id", (req, res, next) => {
     });
 });
 
-//COURSE ROUTES
 // This will send a GET request to /api/courses/:id to show course
 // It will returns HTTP: Status Code 200
 app.get("/api/courses/:id", (req, res, next) => {
@@ -200,15 +194,14 @@ app.get("/api/courses/:id", (req, res, next) => {
     });
 });
 
-//COURSE ROUTES
 // This sends a POST request to /api/courses to create courses
 // It the returns an HTTP: Status Code 201 (Created Successfully)
 //Authentication
 app.post("/api/courses", authenticateUser, (req, res, next) => {
   const course = req.body;
 
-  //create the course
-  //set HTTP header to the URI for the course
+  // This creates the course
+  // This will set HTTP header to the URI for the course
   const Course = app.get("models").Course;
 
   course.userId = req.currentUser.id;
@@ -241,8 +234,6 @@ app.post("/api/courses", authenticateUser, (req, res, next) => {
   //}
 });
 
-//COURSE ROUTES
-// Authentication
 // This will send a PUT request to /api/courses/:id to update courses
 // It then returns HTTP: Status Code 204 (No Content)
 
@@ -305,8 +296,8 @@ app.put("/api/courses/:id", authenticateUser, (req, res, next) => {
   }
 });
 
-//COURSE ROUTES
-// Authentication
+//
+// COURSE ROUTES - Authentication
 // Send a DELETE request to /api/courses/:id to delete courses
 
 app.delete("/api/courses/:id", authenticateUser, (req, res, next) => {
