@@ -3,9 +3,9 @@
 // This loads application modules
 const express = require('express');
 const morgan = require('morgan');
-const {sequelize, models} = require('./models');
-const {User} = require('./models');
-const {Course} = require('./models');
+const { sequelize, models } = require('./models');
+const { User } = require('./models');
+const { Course } = require('./models');
 const bcryptjs = require('bcryptjs');
 const auth = require('basic-auth');
 
@@ -16,7 +16,7 @@ const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'tr
 const app = express();
 
 // This sets up morgan HTTP request logger middleware.  
-// which simplifies the process of logging requests to your application.
+// which will simplify the process of logging requests to the application.
 app.use(morgan('dev'));
 
 // This enables access to req.body
@@ -101,26 +101,28 @@ app.get('/api/users', authenticateUser, asyncHandler(async (req, res) => {
 // This creates a user and will sets the 'Location' header to '/'
 app.post('/api/users', asyncHandler(async (req, res) => {
     // This is checking if the request body has a password
-    if (req.body.password) {
+    // If the instance was success, response location will reset and send a 201 status code
+    if (req.body.password && req.body.firstName && req.body.lastName && req.body.emailAddress) {
         // This hashes/encrypts the password and attempts to create a new user 
         req.body.password = await bcryptjs.hashSync(req.body.password);
-        
         // This triggers validation for the User model
-        const newUser = await User.create(req.body);
+        await User.create(req.body);
+        res.location('/');
+        res.status(201).end();
+
     } else {
-        // This triggers validation for Users model
-        const newUser = await User.create(req.body);
+        res.status(400).json({
+            message: 'Missing information - Please check all fields',
+        });
     }
-    // If the instance was success, this will reset response location then send a 201 status code
-    res.location('/');
-    res.status(201).end();
+
 })
 );
 
 // This returns a list of courses with the user
 app.get('/api/courses', asyncHandler(async (req, res) => {
     const courses = await Course.findAll({
-        
+
         // This filters out private and information that is not needed
         attributes: {
             exclude: ['createdAt', 'updatedAt'],
@@ -142,7 +144,7 @@ app.get('/api/courses', asyncHandler(async (req, res) => {
 // This returns the course with the course ID
 app.get('/api/courses/:id', asyncHandler(async (req, res) => {
     const course = await Course.findAll({
-        
+
         // This filters out private and information that is not needed
         where: {
             id: req.params.id,
@@ -167,31 +169,42 @@ app.get('/api/courses/:id', asyncHandler(async (req, res) => {
 // This creates a course and sets the 'Location' header to the URI for the course
 // This course validations makes sure that requested data is provided by user
 app.post('/api/courses', authenticateUser, asyncHandler(async (req, res) => {
-    const newCourse = await Course.create(req.body);
-    res.location(`/api/courses/${newCourse.id}`);
-    res.status(201).end();
+    if (req.body.title && req.body.description) {
+        const newCourse = await Course.create(req.body);
+        res.location(`/api/courses/${newCourse.id}`);
+        res.status(201).end();
+    } else {
+        res.status(400).json({
+            message: 'Missing information - Please check all fields',
+        });
+    }
 })
 );
 
 // This will update the course 
 app.put('/api/courses/:id', authenticateUser, asyncHandler(async (req, res, next) => {
     let course = await Course.findByPk(req.params.id);
-   
-    // This checks to ensure that authenticated user is the associated with the course
-    if (course.userId === req.body.userId) {
-        course.title = req.body.title;
-        course.description = req.body.description;
-        course.estimatedTime = req.body.estimatedTime;
-        course.materialsNeeded = req.body.materialsNeeded;
-        
-        // This validations will ensure that required data is provided
-        course = await course.save();
-        res.status(204).end();
+    if (req.body.title && req.body.description) {
+        // This checks to ensure that authenticated user is the associated with the course
+        if (course.userId === req.body.userId) {
+            course.title = req.body.title;
+            course.description = req.body.description;
+            course.estimatedTime = req.body.estimatedTime;
+            course.materialsNeeded = req.body.materialsNeeded;
+
+            // This validations will ensure that required data is provided
+            course = await course.save();
+            res.status(204).end();
+        } else {
+            // This prohibits users from updating courses that they are not associated with.
+            const err = new Error('This Action is Not Allowed');
+            err.status = 403;
+            next(err);
+        }
     } else {
-        // This prohibits users from updating courses that they are not associated with.
-        const err = new Error('This Action is Not Allowed');
-        err.status = 403;
-        next(err);
+        res.status(400).json({
+            message: 'Missing information - Please check all fields',
+        });
     }
 })
 );
@@ -199,13 +212,13 @@ app.put('/api/courses/:id', authenticateUser, asyncHandler(async (req, res, next
 // This will delete a course
 app.delete('/api/courses/:id', authenticateUser, asyncHandler(async (req, res, next) => {
     const course = await Course.findByPk(req.params.id);
-    
+
     // This checks that authenticated user is associated with the course
     if (course.userId === req.body.userId) {
         await course.destroy();
         res.status(204).end();
     } else {
-        
+
         // This forbids users may not delete courses that they do not own
         const err = new Error('This Action is Not Allowed');
         err.status = 403;
@@ -232,67 +245,41 @@ app.use((req, res) => {
 app.set('port', process.env.PORT || 5000);
 
 // This will test the connection to the database
+// Attempt to authenticate database
+// If database is authenticated, then sync the database and start listening on port 5000
+
 console.log('Testing connection to the db');
 sequelize
-    .authenticate() // Attempt to authenticate database
+    .authenticate() 
     .then(() => {
-        // If database is authenticated, then sync the database
         console.log('Connection Successful - Syncing in progress');
         return sequelize.sync();
     })
     .then(() => {
-        // This will start listening on port if db authentication succeeds and if database has been synced
         const server = app.listen(app.get('port'), () => {
-            console.log(`Express server is listening on port ${server.address().port}`);
+        console.log(`Express server is listening on port ${server.address().port}`);
         });
     }) // This will inform the user if authentication to the db has failed.
     .catch(err => console.log('Sorry ~ Connection Failed'));
 
-
-
-
-// 'use strict';
-
-// // This will load modules
-// const express = require('express');
-// const morgan = require('morgan');
-
-// const app = require('./routes/routes.js');
-
-// // This variable will enable global error logging
-// const enableGlobalErrorLogging = process.env.ENABLE_GLOBAL_ERROR_LOGGING === 'true';
-
-// // This sets up morgan which will give http request logging
-// app.use(morgan('dev'));
-
-// // This sets the port
-// app.set('port', process.env.PORT || 5000);
-
-// // This will start listening to the port
-// const server = app.listen(app.get('port'), () => {
-//     console.log(`Express server is listening on port ${server.address().port}`);
-// });
-
-
-
-// // This is the Global Error handler
-// app.use((err, req, res, next) => {
-//     if (enableGlobalErrorLogging) {
-//         console.error(`Global error handler: ${JSON.stringify(err.stack)}`);
-//     }
-//     if (err.name === 'SequelizeValidationError') {
-//         let errorString = '';
-//         for (let error in err.errors) {
-//             errorString += `${err.errors[error].message}\n`;
-//         }
-//         err.status = 400;
-//     }
-//     if (err.name === 'SequelizeUniqueConstraintError') {
-//         err.status = 400;
-//     }
-//     console.log(err);
-//     res.status(err.status || 500).json({
-//         message: err.message,
-//         error: {},
-//     });
-// });
+// This is the Global Error handler
+app.use((err, req, res, next) => {
+    if (enableGlobalErrorLogging) {
+        console.error(`Global error handler: ${JSON.stringify(err.stack)}`);
+    }
+    if (err.name === 'SequelizeValidationError') {
+        let errorString = '';
+        for (let error in err.errors) {
+            errorString += `${err.errors[error].message}\n`;
+        }
+        err.status = 400;
+    }
+    if (err.name === 'SequelizeUniqueConstraintError') {
+        err.status = 400;
+    }
+    console.log(err);
+    res.status(err.status || 500).json({
+        message: err.message,
+        error: {},
+    });
+});
